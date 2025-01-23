@@ -10,7 +10,7 @@ export default function SearchForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+  const API = import.meta.env.VITE_KEY;
 
   useEffect(() => {
     fetchWeather("Stowmarket");
@@ -20,7 +20,7 @@ export default function SearchForm() {
     setLoading(true);
     setError("");
     fetch(
-      `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${query}&aqi=no`
+      `http://api.weatherapi.com/v1/current.json?key=${API}&q=${query}&aqi=no`
     )
       .then((response) => {
         if (!response.ok) {
