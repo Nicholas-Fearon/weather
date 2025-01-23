@@ -13,7 +13,7 @@ export default function SearchForm() {
   const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
   useEffect(() => {
-    fetchWeather("London");
+    fetchWeather("Stowmarket");
   }, []);
 
   const fetchWeather = (query) => {
@@ -64,7 +64,7 @@ export default function SearchForm() {
               type="text"
               id="SearchForm"
               value={results}
-              placeholder="Enter location (e.g., London)"
+              placeholder="Enter location"
               aria-label="Search for a location"
             />
           </div>
