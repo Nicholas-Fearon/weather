@@ -20,7 +20,7 @@ export default function SearchForm() {
     setLoading(true);
     setError("");
     fetch(
-      `http://api.weatherapi.com/v1/current.json?key=${API}&q=${query}&aqi=no`
+      `https://api.weatherapi.com/v1/current.json?key=${API}&q=${query}&aqi=no`
     )
       .then((response) => {
         if (!response.ok) {
