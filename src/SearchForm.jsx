@@ -1,89 +1,106 @@
 import { useState, useEffect } from "react";
+
 export default function SearchForm() {
-    const [results, setResults] = useState("")
-   const [location, setLocation] = useState("")
-   const [temp, setTemp] = useState("");
-   const [icon, setIcon] = useState("");
-   const [condition, setCondition] = useState("");
-    const [region, setRegion] = useState("");
+  const [results, setResults] = useState("");
+  const [location, setLocation] = useState("");
+  const [temp, setTemp] = useState("");
+  const [icon, setIcon] = useState("");
+  const [condition, setCondition] = useState("");
+  const [region, setRegion] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
-useEffect(() => {
-    fetch(`http://api.weatherapi.com/v1/current.json?key=8f1eda0869be45db9e4122137221203&q=London&aqi=no
-    `)
-    .then(response => response.json())
-    .then(data => {
-        console.log(data)
-        setLocation(data.location.name)
-        setTemp(data.current.temp_c)
-        setIcon(data.current.condition.icon)
-        setCondition(data.current.condition.text)
-        setRegion(data.location.region)
-        
-    })
-    .catch(error => {
-        console.error(error,"Results not found")
-    })
-},[]);
+  useEffect(() => {
+    fetchWeather("London");
+  }, []);
 
-   function handleformsubmit(e) {
+  const fetchWeather = (query) => {
+    setLoading(true);
+    setError("");
+    fetch(
+      `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${query}&aqi=no`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Location not found");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setLocation(data.location.name);
+        setTemp(data.current.temp_c);
+        setIcon(data.current.condition.icon);
+        setCondition(data.current.condition.text);
+        setRegion(data.location.region);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Unable to fetch weather data. Please try again.");
+        setLoading(false);
+      });
+  };
+
+  const handleFormSubmit = (e) => {
     e.preventDefault();
-    
-    fetch(`http://api.weatherapi.com/v1/current.json?key=8f1eda0869be45db9e4122137221203&q=${results}&aqi=no
-    `)
-    .then(response => response.json())
-    .then(data => {
-        console.log(data)
-        setLocation(data.location.name)
-        setTemp(data.current.temp_c)
-        setIcon(data.current.condition.icon)
-        setCondition(data.current.condition.text)
-        setRegion(data.location.region)
-        
-    })
-    .catch(error => {
-        console.error(error,"Results not found")
-    })
-    
-    setResults("");
-    
-   }
+    if (results.trim()) {
+      fetchWeather(results);
+      setResults("");
+    }
+  };
 
-   return <form onSubmit={handleformsubmit} >
-    <div className="flex items-center justify-center h-screen">
-        
-        <div className="text-black bg-blue-300  font-bold rounded-lg border shadow-lg p-10">
-        
-            <input onChange={e => setResults(e.target.value)} className="p-2 rounded mb-4" type="text" 
-            id="SearhForm" 
-            value={results}
-            placeholder="Enter location">
-            </input>
-
-            <input type="submit" 
-            
-            value="search"
-            className="text-center ml-4 bg-transparent border
-             border-black hover:border-white text-white
-              hover:text-black font-bold py-2 px-4 rounded-full"
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-600 to-indigo-700">
+      <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          Weather App
+        </h1>
+        <form onSubmit={handleFormSubmit} className="space-y-4">
+          <div className="relative">
+            <input
+              onChange={(e) => setResults(e.target.value)}
+              className="w-full p-3 text-gray-800 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              type="text"
+              id="SearchForm"
+              value={results}
+              placeholder="Enter location (e.g., London)"
+              aria-label="Search for a location"
             />
-            <div className="flex items-center justify-center">
-                <div className="text-white">
-                    <p>{location},</p>
-                    <p>{region}</p>
-                    <p>{temp} °C</p>
-                    <img src={icon}></img>
-                    <p>{condition}</p>
-                </div>
-            
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white font-bold py-3 rounded-lg hover:bg-blue-600 transition duration-200"
+          >
+            Search
+          </button>
+        </form>
+
+        {loading ? (
+          <p className="text-center mt-6 text-blue-500 font-semibold">
+            Loading...
+          </p>
+        ) : error ? (
+          <p className="text-center mt-6 text-red-500 font-semibold">{error}</p>
+        ) : (
+          location && (
+            <div className="mt-8 text-center space-y-4">
+              <h2 className="text-xl font-semibold text-gray-800">
+                {location}, {region}
+              </h2>
+              <p className="text-4xl font-bold text-gray-700">{temp} °C</p>
+              {icon && (
+                <img
+                  src={icon}
+                  alt={condition}
+                  className="inline-block w-16 h-16"
+                />
+              )}
+              <p className="text-lg text-gray-600">{condition}</p>
             </div>
-           </div>
-           
+          )
+        )}
+      </div>
     </div>
-    
-        
-            
-       
-    </form>
-    
+  );
 }
