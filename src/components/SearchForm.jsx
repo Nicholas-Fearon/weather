@@ -23,9 +23,7 @@ export default function SearchForm() {
       `https://api.weatherapi.com/v1/current.json?key=${API}&q=${query}&aqi=no`
     )
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Location not found");
-        }
+        if (!response.ok) throw new Error("Location not found");
         return response.json();
       })
       .then((data) => {
@@ -51,54 +49,52 @@ export default function SearchForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-600 to-indigo-700">
-      <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+    <div className="flex items-center justify-center min-h-screen bg-white">
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 w-full max-w-md">
+        <h1 className="text-xl font-semibold text-black text-center mb-6 tracking-wide">
           Weather App
         </h1>
+
         <form onSubmit={handleFormSubmit} className="space-y-4">
-          <div className="relative">
-            <input
-              onChange={(e) => setResults(e.target.value)}
-              className="w-full p-3 text-gray-800 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-              type="text"
-              id="SearchForm"
-              value={results}
-              placeholder="Enter location"
-              aria-label="Search for a location"
-            />
-          </div>
+          <input
+            onChange={(e) => setResults(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-black focus:outline-none"
+            type="text"
+            value={results}
+            placeholder="Enter location"
+            aria-label="Search for a location"
+          />
+
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-bold py-3 rounded-lg hover:bg-blue-600 transition duration-200"
+            className="w-full py-3 rounded-lg bg-black text-white font-medium hover:bg-gray-800 transition-colors"
           >
             Search
           </button>
         </form>
 
-        {loading ? (
-          <p className="text-center mt-6 text-blue-500 font-semibold">
-            Loading...
-          </p>
-        ) : error ? (
-          <p className="text-center mt-6 text-red-500 font-semibold">{error}</p>
-        ) : (
-          location && (
-            <div className="mt-8 text-center space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800">
-                {location}, {region}
-              </h2>
-              <p className="text-4xl font-bold text-gray-700">{temp} °C</p>
-              {icon && (
-                <img
-                  src={icon}
-                  alt={condition}
-                  className="inline-block w-16 h-16"
-                />
-              )}
-              <p className="text-lg text-gray-600">{condition}</p>
-            </div>
-          )
+        {loading && (
+          <p className="text-center mt-6 text-black font-medium">Loading...</p>
+        )}
+
+        {error && (
+          <p className="text-center mt-6 text-red-600 font-medium">{error}</p>
+        )}
+
+        {!loading && !error && location && (
+          <div className="mt-8 text-center space-y-3">
+            <h2 className="text-lg font-semibold text-black">
+              {location}, {region}
+            </h2>
+
+            <p className="text-4xl font-bold text-gray-900">{temp}°C</p>
+
+            {icon && (
+              <img src={icon} alt={condition} className="mx-auto w-14 h-14" />
+            )}
+
+            <p className="text-gray-700 text-lg">{condition}</p>
+          </div>
         )}
       </div>
     </div>
